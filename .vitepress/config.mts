@@ -11,7 +11,7 @@ export default defineConfig({
   base: '/knowledge-vitepress/',
 
   head: [
-    ['link', { rel: 'icon', href: '/favicon.ico' }],
+    ['link', { rel: 'icon', href: '/knowledge-vitepress/favicon.ico' }],
   ],
 
   themeConfig: {
