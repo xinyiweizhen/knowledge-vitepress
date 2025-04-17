@@ -8,10 +8,11 @@ export default defineConfig({
 
   description: "前端知识点总结",
 
-  base: '/knowledge-vitepress/',
+  // GitHub Pages repositoryname
+  base: '/knowledge-vitepress/', // https://<owner>.github.io/<repositoryname>
 
   head: [
-    ['link', { rel: 'icon', href: '/knowledge-vitepress/favicon.ico' }],
+    ['link', { rel: 'icon', href: '/knowledge-vitepress/favicon.ico' }], // add base
   ],
 
   themeConfig: {
@@ -47,12 +48,16 @@ export default defineConfig({
           { text: 'HTML', link: '/docs/front-end/HTML' },
           { text: 'CSS', link: '/docs/front-end/CSS' },
           { text: 'Javascript', link: 'docs/front-end/Javascript' },
+          { text: 'Vue', link: 'docs/front-end/Vue' },
+          { text: 'React', link: 'docs/front-end/React' },
+          { text: '浏览器', link: 'docs/front-end/Browser' },
+          { text: '网络', link: 'docs/front-end/Http' },
         ]
       }
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
+      { icon: 'github', link: 'https://github.com/xinyiweizhen/knowledge-vitepress' }
     ]
   }
 })
