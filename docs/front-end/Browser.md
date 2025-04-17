@@ -150,6 +150,111 @@ localStorage.clear();
 :::
 
 
+## 说下事件循环(Event Loop)
+
+::: details 展开查看
+
+1. 事件循环的理解
+
+   因为 js 是单线程运行的，在代码执行时，通过将不同函数的执行上下文压入执行栈中来保证代码的有序执行。在执行同步代码时，如果遇到异步事件，js 引擎并不会一直等待其返回结果，而是会将这个事件挂起，继续执行执行栈中的其他任务。当异步事件执行完毕后，再将异步事件对应的回调加入到一个任务队列中等待执行。任务队列可以分为宏任务队列和微任务队列，当当前执行栈中的事件执行完毕后，js 引擎首先会判断微任务队列中是否有任务可以执行，如果有就将微任务队首的事件压入栈中执行。当微任务队列中的任务都执行完成后再去执行宏任务队列中的任务。
+
+2. 单线程
+
+   为什么javascript不设计成多线程的? 我们做个假设，如果javascript是多线程的，因为javascript有DOM API可以操作DOM，此时如果有两个线程在操作同一个DOM，线程1删除了这个DOM节点，线程2要操作这个DOM，就会产生矛盾，到底以哪个线程为主。
+
+   为了避免这种情况的出现，javascript就被设计成了单线程 。
+
+3. 宏任务和微任务
+
+   宏任务有：
+
+    - `script`整体代码
+    - `setTimeout`、`setInterval`
+    - I/O
+    - UI渲染
+    - `postMessage`
+    - `MessageChannel`
+    - `requestAnimationFrame`
+    - `setImmediate`(Node 环境)
+
+   微任务有：
+
+    - `new Promise.then()`
+    - `MutaionObserver`(监视对DOM树所做更改的能力)
+    - `process.nextTick`(Node 环境)
+
+4. 执行规则
+
+   Event Loop的执行规则：
+
+    - 所有代码作为宏任务进入主线程执行栈，开始执行
+    - 执行过程中，同步代码会立即执行，宏任务进入宏任务队列，微任务进入微任务队列
+    - 当前宏任务执行完成出队，读取微任务队列，有则执行，直至全部执行完毕
+    - 执行浏览器UI进程渲染
+    - 检查是否有web worker任务，有则执行
+    - 本轮宏任务执行完成，回到第2步，继续执行，直至宏任务与微任务队列全部清空
+
+5. 代码例子
+
+    ```javascript
+    console.log("1"); // 1 同步代码：立即执行 [1]
+    
+    setTimeout(function() {
+      console.log("2"); // 3 同步代码执行执行 输出2
+      process.nextTick(function() {
+        console.log("3"); // 4 进入微任务队列 [3]
+      });
+      new Promise(function(resolve) {
+        console.log("4"); // 3 同步代码执行执行 输出4
+        resolve();
+      }).then(function() {
+        console.log("5"); // 4 进入微任务队列 [3, 5]
+      });
+    });
+    
+    process.nextTick(function() {
+      console.log("6"); // 2 进入微任务队列 [6]
+    });
+    
+    new Promise(function(resolve) {
+      console.log("7"); // 1 宏任务：立即执行 [1, 7]
+      resolve();
+    }).then(function() {
+      console.log("8"); // 2 进入微任务队列 [6, 8]
+    });
+    
+    setTimeout(function() {
+      console.log("9"); // 5 宏任务：立即执行 [9]
+      process.nextTick(function() {
+        console.log("10"); // 6 进入微任务队列 [10]
+      });
+      new Promise(function(resolve) {
+        console.log("11"); // 5 宏任务：立即执行 [9, 11]
+        resolve();
+      }).then(function() {
+        console.log("12"); // 6 进入微任务队列 [10, 12]
+      });
+    });
+    
+    // 执行顺序：1 7 6 8 2 4 3 5 9 11 10 12
+    ```
+
+   我们来分析下上述代码的执行顺序，如下图所示：
+
+   ![执行顺序](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/79eda5cc57334da4807a3f41d53debb8~tplv-k3u1fbpfcp-watermark.image)
+
+
+:::
+
+
+参考资料
+
+- [如何解释Event Loop面试官才满意？](https://zhuanlan.zhihu.com/p/72507900)
+
+
+
+
+
 
 ## 开发一个无限下拉加载图片的页面，如何给每个图片绑定 click 事件？
 
