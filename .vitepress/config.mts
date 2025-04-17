@@ -59,5 +59,6 @@ export default defineConfig({
     socialLinks: [
       { icon: 'github', link: 'https://github.com/xinyiweizhen/knowledge-vitepress' }
     ]
-  }
+  },
+  ignoreDeadLinks: [],
 })

@@ -1,7 +1,6 @@
 # Javascript
 
 
-
 ## 变量声明提升？
 
 参考答案：
@@ -1987,7 +1986,7 @@ console.log(iterator.next().value);//xyz
 
 该方法基于ECMAScript 2015（ES6）规范，同 `values` 方法功能相同。
 
-语法：*arr[Symbol.iterator]()*
+语法：*`arr[Symbol.iterator]()`*
 
 ```javascript
 var array = ["abc", "xyz"];
