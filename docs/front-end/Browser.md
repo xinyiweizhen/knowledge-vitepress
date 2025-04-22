@@ -241,7 +241,7 @@ localStorage.clear();
 
    我们来分析下上述代码的执行顺序，如下图所示：
 
-   ![执行顺序](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/79eda5cc57334da4807a3f41d53debb8~tplv-k3u1fbpfcp-watermark.image)
+   ![执行顺序](../images/event-loop.image)
 
 
 :::
