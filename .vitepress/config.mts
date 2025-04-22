@@ -152,4 +152,9 @@ export default defineConfig({
     ]
   },
   ignoreDeadLinks: [],
+  vite: {
+    assetsInclude: [
+      '**/*.image' // 处理图片 .image 后缀的图片
+    ]
+  }
 })
