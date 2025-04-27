@@ -28,7 +28,7 @@ export default defineConfig({
     ],
 
     outline: {
-      level: [2, 3],
+      level: 2,
       label: '目录',
     },
 
@@ -154,7 +154,8 @@ export default defineConfig({
   ignoreDeadLinks: [],
   vite: {
     assetsInclude: [
-      '**/*.image' // 处理图片 .image 后缀的图片
+      '**/*.image', // 处理图片 .image 后缀的图片
+      '**/*.webp' // 处理图片 .webp 后缀的图片
     ]
   }
 })

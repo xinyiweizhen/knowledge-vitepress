@@ -4,6 +4,10 @@
 
 `includes()` 方法用来判断一个数组是否包含一个指定的值。如果包含则返回 `true`，否则返回 `false`。
 
+
+> [!TIP]
+> 你可能会问，既然有了`indexOf`方法，为什么又造一个`includes`方法，`arr.indexOf(x) > -1` 不就等于 `arr.includes(x)` ？看起来是的，几乎所有的时候它们都等同， 唯一的区别就是**includes能够发现NaN，而indexOf不能**
+
 ## 语法
 
 > arr.includes(valueToFind\[, fromIndex\])
@@ -25,7 +29,7 @@
 [1, 2, 3].includes(4) // false
 [1, 2, 3].includes(3, 3) // false
 [1, 2, 3].includes(3, -1) // true
-[1, 2, NaN].includes(NaN) // true
+[1, 2, NaN].includes(NaN) // true   includes能够发现NaN，而indexOf不能
 ```
 
 ### fromIndex 大于等于数组长度
