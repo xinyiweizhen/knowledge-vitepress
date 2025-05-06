@@ -24,7 +24,13 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: '首页', link: '/' },
-      { text: '前端', link: '/docs/hr-exam/behavioural-test' }
+      { text: '前端', link: '/docs/hr-exam/behavioural-test' },
+      {
+        text: '教程',
+        items: [
+          { text: '网格布局指南(Grid)', link: '/docs/guides/css-grid-layout-guide/css-grid-layout-guide' },
+        ]
+      }
     ],
 
     outline: {
