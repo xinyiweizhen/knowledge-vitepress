@@ -295,7 +295,7 @@ prev: false
 
 这允许为单个弹性项目覆盖默认对齐方式（或由 `align-items` 指定的对齐方式）
 
-![img.png](img.png)
+![align-self.png](images/align-self.png)
 
 
 请参阅 `align-items` 说明以了解可用取值。
