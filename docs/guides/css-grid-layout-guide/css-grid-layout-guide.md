@@ -137,6 +137,7 @@ prev: false
 }
 ```
 
+------
 
 #### `grid-template-columns` `grid-template-rows`
 
@@ -235,7 +236,7 @@ prev: false
 }
 ```
 
-
+------
 
 #### `grid-template-areas`
 
@@ -306,7 +307,7 @@ prev: false
 > 而其最后一行线和最后一列线的名称将是 `foo-end`。这意味着某些行可能会有多个名称，例如上面示例中的最左边的行，
 > 它将有三个名称：`header-start`、`main-start` 和 `footer-start`。
 
-
+------
 
 #### `grid-template`
 
@@ -349,7 +350,7 @@ prev: false
 由于 `grid-template` 不会重置隐式网格属性（ `grid-auto-columns` 、 `grid-auto-rows` 和 `grid-auto-flow` ），
 这可能是大多数情况下你想要做的，因此建议使用 `grid` 属性而不是 `grid-template` 属性。
 
-
+------
 
 #### `column-gap` `row-gap` `grid-column-gap` `grid-row-gap`
 
@@ -388,7 +389,7 @@ prev: false
 
 网格之间的间隙仅创建在列/行之间，而不是在外边缘。
 
-
+------
 
 #### `gap` `grid-gap`
 
@@ -423,7 +424,7 @@ prev: false
 
 如果没有指定 `row-gap` ，则将其设置为与 `column-gap` 相同的值
 
-
+------
 
 #### `justify-items`
 
@@ -479,7 +480,7 @@ prev: false
 
 此行为也可以通过 `justify-self` 属性在**单个网格项**上设置。
 
-
+------
 
 #### `align-items`
 
@@ -537,7 +538,7 @@ prev: false
 也存在修饰符关键字 `safe` 和 `unsafe` （用法类似于 `align-items: safe end` ）。 `safe` 关键字表示“**尝试这样对齐，
 但如果这样做意味着将项目对齐到无法访问的溢出区域，则不进行对齐**”，而 `unsafe` 将允许将内容移动到无法访问的区域（“数据丢失”）。
 
-
+------
 
 #### `place-items`
 
@@ -556,7 +557,7 @@ prev: false
 }
 ```
 
-
+------
 
 #### `justify-content`
 
@@ -636,7 +637,7 @@ prev: false
 
 ![justify-content-space-evenly.png](images/justify-content-space-evenly.png)
 
-
+------
 
 #### `align-content`
 
@@ -717,7 +718,7 @@ prev: false
 
 ![align-content-space-evenly.png](images/align-content-space-evenly.png)
 
-
+------
 
 #### `place-content`
 
@@ -729,7 +730,7 @@ prev: false
 
 所有主流浏览器（Edge 除外）都支持  place-content 简写属性。
 
-
+------
 
 #### `grid-auto-columns` `grid-auto-rows`
 
@@ -786,7 +787,7 @@ prev: false
 
 ![grid-auto-columns-3.png](images/grid-auto-columns-3.png)
 
-
+------
 
 ####  `grid-auto-flow`
 
@@ -863,6 +864,7 @@ prev: false
 
 ![grid-auto-flow-2.png](images/grid-auto-flow-column.png)
 
+------
 
 #### `grid` 
 
@@ -1061,6 +1063,7 @@ prev: false
 > [!TIP]
 >  `float` 、 `display: inline-block` 、 `display: table-cell` 、 `vertical-align` 和 `column-*` 属性对网格项没有影响。
 
+------
 
 #### `grid-column-start` `grid-column-end` `grid-row-start` `grid-row-end`
 
@@ -1130,7 +1133,7 @@ prev: false
 项目可以相互重叠。您可以使用 `z-index` 来控制它们的堆叠顺序。
 
 
-
+------
 
 #### `grid-column` `grid-row`
 
@@ -1172,7 +1175,7 @@ prev: false
 如果未声明结束行值，则项目默认占用 1 个轨道。
 
 
-
+------
 
 #### `grid-area`
 
@@ -1228,7 +1231,7 @@ prev: false
 ![item-grid-area.png](images/item-grid-area.png)
 
 
-
+------
 
 #### `justify-self`
 
@@ -1310,7 +1313,7 @@ prev: false
 要设置网格中所有项目的对齐方式，也可以通过 `justify-items` 属性在网格容器上设置此行为。
 
 
-
+------
 
 #### `align-self`
 
@@ -1394,7 +1397,7 @@ prev: false
 要对网格中的所有项目进行对齐，这种行为也可以通过 `align-items` 属性在网格容器上设置。
 
 
-
+------
 
 #### `place-self`
 
@@ -1458,6 +1461,8 @@ grid-template-columns: 1fr 3fr;
 grid-template-columns: 50px min-content 1fr;
 ```
 
+------
+
 #### 尺寸关键词(Size Keywords)
 
 当调整行和列的大小时，您可以像往常一样使用所有熟悉的长度单位，如 `px 、rem、% `等，但您还可以使用关键词：
@@ -1469,6 +1474,8 @@ grid-template-columns: 50px min-content 1fr;
 - `auto` 这个关键词与 `fr` 单位非常相似，但它们在分配剩余空间时“败给了” `fr` 单位
 
 - `fr` 见上文
+
+------
 
 #### 尺寸函数(Size Functions)
 
@@ -1483,6 +1490,8 @@ grid-template-columns: minmax(100px, 1fr) 3fr;
 - `min()` 函数。
 
 - `max()` 函数。
+
+------
 
 #### `repeat()` 函数和关键词
 
@@ -1506,6 +1515,5 @@ grid-template-columns: repeat(8, minmax(10px, 1fr));
 这是 CSS Grid 中最著名的片段之一，也是所有 CSS 技巧中最伟大的之一
 
 ```css
-grid-template-columns: 
-  repeat(auto-fit, minmax(250px, 1fr));
+grid-template-columns:  repeat(auto-fit, minmax(250px, 1fr));
 ```

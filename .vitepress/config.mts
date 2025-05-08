@@ -42,8 +42,28 @@ export default defineConfig({
       },
       {
         text: '教程',
-        items: [{ text: '网格布局指南(Grid)', link: '/docs/guides/css-grid-layout-guide/css-grid-layout-guide' }],
+        items: [
+          {
+            text: 'Flexbox 布局教程',
+            link: '/docs/guides/css-flexbox-guide/css-flexbox-guide',
+          },
+          {
+            text: '网格布局指南(Grid)',
+            link: '/docs/guides/css-grid-layout-guide/css-grid-layout-guide'
+          },
+        ],
       },
+      {
+        text: '资源',
+        items: [
+          {
+            text: '优秀资源库',
+            items: [
+                { text: 'es-toolkit', link: 'https://es-toolkit.slash.page/zh_hans/'}
+            ]
+          }
+        ]
+      }
     ],
 
     outline: {
