@@ -48,10 +48,14 @@ export default defineConfig({
             link: '/docs/guides/css-flexbox-guide/css-flexbox-guide',
           },
           {
-            text: '网格布局指南(Grid)',
+            text: 'Grid 布局教程',
             link: '/docs/guides/css-grid-layout-guide/css-grid-layout-guide'
           },
         ],
+      },
+      {
+        text: '深度长文',
+        link: '/docs/in-depth-articles/index',
       },
       {
         text: '资源',
@@ -213,6 +217,24 @@ export default defineConfig({
                 { text: 'Change Array by copy', link: '/docs/esnext-book/es2023/change-array-by-copy' },
               ],
             }
+          ],
+        },
+      ],
+      '/docs/guides/': [
+        {
+          text: '教程',
+          collapsed: false,
+          items: [
+            { text: 'Flexbox 布局教程', link: '/docs/guides/css-flexbox-guide/css-flexbox-guide' },
+            { text: 'Grid 布局教程', link: '/docs/guides/css-grid-layout-guide/css-grid-layout-guide' },
+          ],
+        },
+      ],
+      '/docs/in-depth-articles/': [
+        {
+          text: '深度长文',
+          items: [
+            { text: 'JavaScript数组所有API全解密', link: '/docs/in-depth-articles/javascript-array-all-APIs-decrypted' },
           ],
         },
       ],
