@@ -543,3 +543,73 @@ this.$nextTick(() => {
 
 - [2021」高频前端面试题汇总之Vue篇 （上） —— v-show与v-if区别](https://juejin.cn/post/6919373017218809864#heading-19)
 
+
+## `keep-alive`底层原理
+
+::: details 展开查看
+
+* `keep-alive` 是一个`Vue`内置组件，主要用于缓存组件实例，避免重复创建和销毁，提高性能。(不会渲染出 DOM 元素，也不会出现在父组件链中)。它的底层实现主要依靠以下几个关键部分：
+
+  + 缓存机制：`keep-alive` 内部使用一个对象 `cache` 来存储缓存的组件实例，键是组件的唯一标识`key`，值就是对应组件的虚拟节点`vnode`。同时，使用一个数组`keys` 来维护这些实例缓存顺序
+  + 而每个缓存顺序通过 `lru 算法`进行维护，当缓存的组件数量超过`max` 属性指定的上限时，会优先移除最久未使用的组件实例。
+  + 另外，`keep-alive` 还会在组件声明周期中添加`activated` 和 `deactivated` 钩子，当组件被激活时触发`activated`，被缓存时触发`deactivated`，并且不会再触发`mounted` 和 `unmounted` 钩子。
+  + 最后，核心代码逻辑是在`keep-alive` 的`render` 函数里面，会获取默认插槽的第一个组件节点，再根据`include` 和`exclude` 属性判断是否需要缓存该组件。
+  + 若需要缓存，就检查`cache` 中是否已有该组件实例，有则直接从缓存获取，没有则添加到缓存里。
+* `keep-alive` 内置组件，可以使组件在切换时保持状态，避免重新渲染。
+* 可以通过 `include` 和 `exclude` 属性来指定需要缓存的组件。
+* 可以缓存 、列表渲染、组件缓存等。
+* 需要缓存的组件`push` 到`include` 数组中，不需要缓存的组件`push` 到`exclude` 数组中。
+
+:::
+
+## `Vue router`两种模式原理
+
+::: details 展开查看
+
+* `hash` 模式：
+  + 监听`hashchange`事件，根据`hash`值，更新路由
+  + 使用`location.hash = '#' + path`，更新`hash`值
+* `history` 模式：
+  + 监听`popstate`事件，根据`state`值，更新路由
+  + 使用`history.pushState(state, title, url)`，更新`state`值
+  + `pushState`，`replaceState`方法，都是改变`state`值，不会触发`popstate`事件
+  + 需要手动
+  + 只有用户点击浏览器的前进、后退按钮或者调用 `history.back()`、`history.forward()` 等方法时才会触发`popstate`事件
+* `history` 兼容，服务器也配置了`history`模式，但是用户刷新页面，会404，需要服务器配置重定向，将所有请求重定向到`index.html`
+
+:::
+
+## `reactive` 和 `ref` 响应式的区别
+
+::: details 展开查看
+
+* `Vue3` 中的 `reactive` 是基于 `ES6` 的 `Proxy` 代理实现的响应式系统。
+它专门用于处理引用类型数据（如对象或数组），通过拦截对象属性的访问和修改操作实现响应式。
+具体工作原理是：当我们访问对象属性时，会触发 `Proxy` 的 `get 陷阱（trap）`，此时进行依赖收集，将当前正在执行的副作用函数（`effect`）与该属性关联起来；
+当我们修改对象属性时，会触发 `Proxy` 的 `set 陷阱`，系统会通知所有依赖于该属性的副作用函数重新执行，从而实现界面的自动更新。
+`reactive` 的局限性在于它只能处理对象类型，不能直接代理原始类型值。
+* `ref` 是 `Vue3` 提供的另一种响应式解决方案，它可以处理任何类型的数据，包括**原始类型（如数字、字符串、布尔值等）**和**引用类型**。
+当我们使用 `ref` 包装一个原始类型值时，它会创建一个带有 `value` 属性的 `RefImpl` 对象，并通过 `Object.defineProperty` 的 `get/set` 拦截器实现这个 `value` 属性的响应式。
+当我们使用 `ref` 包装一个引用类型值时，它会在内部调用 `reactive` 来处理这个值，然后将其包装在 `RefImpl` 对象的 `value` 属性中。
+这就是为什么使用 `ref` 时需要通过`.value` 访问或修改值的原因。在模板中使用 `ref` 时，`Vue` 会自动解包，不需要手动添加 `.value`。
+
+:::
+
+## vue 响应式的实现原理
+
+* 实现一个监听器 Observer：对数据对象进行遍历，包括子属性对象的属性，利用 Object.defineProperty() 对属性都加上 setter 和 getter。这样的话，给这个对象的某个值赋值，就会触发 setter，那么就能监听到了数据变化。
+* 实现一个解析器 Compile：解析 Vue 模板指令，将模板中的变量都替换成数据，然后初始化渲染页面视图，并将每个指令对应的节点绑定更新函数，添加监听数据的订阅者，一旦数据有变动，收到通知，调用更新函数进行数据更新。
+* 实现一个订阅者 Watcher：Watcher 订阅者是 Observer 和 Compile 之间通信的桥梁 ，主要的任务是订阅 Observer 中的属性值变化的消息，当收到属性值变化的消息时，触发解析器 Compile 中对应的更新函数。
+* 实现一个订阅器 Dep：订阅器采用 发布-订阅 设计模式，用来收集订阅者 Watcher，对监听器 Observer 和 订阅者 Watcher 进行统一管理。
+
+## computed 和 watch 的区别
+
+* 都是用于响应式数据变化
+* computed 是计算属性，会自动追踪自身内部使用的响应式数据，并且在组件初始化是执行一次，会返回一个值。并且值会缓存，只要当依赖的响应式数据变化时，会重新计算。
+* watch 是侦听器，用于监听指定数据源的变化，每次数据变化时执行回调函数，处理副作用或自定义逻辑。
+* watch 可以监听单个或多个数据源，可以使用immediate 和deep 选项控制回调函数的执行时机。
+* 其实如果多个数据源，使用watchEffect 就可以了。
+* 使用场景：
+  + computed 过滤、
+  + watch 数据请求、dom操作
+* watch 类似useEffect，useEffect 通过依赖数组，需要手动实现深度监听

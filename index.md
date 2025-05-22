@@ -2,11 +2,11 @@
 # https://vitepress.dev/reference/default-theme-home-page
 layout: home
 
-title: JOOSCHA的知识库
+title: JOO'S CHA的宝藏
 titleTemplate: 个人技术知识库，记录和分享个人碎片化、结构化、体系化的技术知识内容
 
 hero:
-  name: "JOO'S CHA的知识库"
+  name: "JOO'S CHA的宝藏"
   text: "专注 & 洞察 & 分享"
   tagline: 个人技术知识库，记录 & 分享个人碎片化、结构化、体系化的技术知识内容。
   actions:

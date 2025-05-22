@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="800"  viewBox="0 0 1000 800" fill="#f9f9f9">
+    <!-- Step 1 -->
+    <rect x="50" y="20" width="320" height="60" class="box" fill="none" stroke="#333"/>
+    <text x="150" y="50" class="text-center" fill="#333">1. 输入 URL</text>
+    <!-- Step 2 -->
+    <rect x="50" y="120" width="320" height="60" class="box" fill="none" stroke="#333"/>
+    <text x="150" y="130" class="text-center" fill="#333">2. DNS 解析</text>
+    <line x1="150" y1="80" x2="150" y2="100" marker-end="url(#arrow)" fill="none" stroke="#333"/>
+    <!-- Step 3 -->
+    <rect x="50" y="220" width="320" height="60" class="box" fill="none" stroke="#333"/>
+    <text x="150" y="210" class="text-center" fill="#333">3. TCP 三次握手</text>
+    <line x1="150" y1="160" x2="150" y2="180" marker-end="url(#arrow)" fill="none" stroke="#333" />
+    <!-- Step 4 -->
+    <rect x="50" y="320" width="320" height="60" class="box" fill="none" stroke="#333"/>
+    <text x="150" y="290" class="text-center" fill="#333">4. TLS 握手（HTTPS）</text>
+    <line x1="150" y1="320" x2="150" y2="260" marker-end="url(#arrow)" fill="none" stroke="#333"/>
+    <!-- Step 5 -->
+    <rect x="50" y="420" width="320" height="60" class="box" fill="none" stroke="#333"/>
+    <text x="150" y="370" class="text-center" fill="#333">5. 发送 HTTP 请求</text>
+    <line x1="150" y1="400" x2="150" y2="340" marker-end="url(#arrow)" fill="none" stroke="#333"/>
+    <!-- Step 6 -->
+    <rect x="50" y="520" width="320" height="60" class="box" fill="none" stroke="#333"/>
+    <text x="150" y="450" class="text-center" fill="#333">6. 服务器处理请求</text>
+    <line x1="150" y1="480" x2="150" y2="420" marker-end="url(#arrow)" fill="none" stroke="#333"/>
+    <!-- Step 7 -->
+    <rect x="50" y="620" width="320" height="60" class="box" fill="none" stroke="#333"/>
+    <text x="150" y="530" class="text-center" fill="#333">7. 返回 HTTP 响应</text>
+    <line x1="150" y1="560" x2="150" y2="500" marker-end="url(#arrow)" fill="none" stroke="#333"/>
+    <!-- Step 8 -->
+    <rect x="50" y="720" width="320" height="60" class="box" fill="none" stroke="#333"/>
+    <text x="150" y="610" class="text-center" fill="#333">8. 浏览器解析 HTML</text>
+    <line x1="150" y1="640" x2="150" y2="580" marker-end="url(#arrow)" fill="none" stroke="#333"/>
+    <!-- Step 9 -->
+    <rect x="50" y="820" width="320" height="60" class="box" fill="none" stroke="#333"/>
+    <text x="150" y="690" class="text-center" fill="#333">9. 构建 DOM / CSSOM / 渲染树</text>
+    <line x1="150" y1="720" x2="150" y2="660" marker-end="url(#arrow)" fill="none" stroke="#333"/>
+    <!-- Step 10 -->
+    <rect x="50" y="920" width="320" height="60" class="box" fill="none" stroke="#333"/>
+    <text x="150" y="770" class="text-center" fill="#333">10. 页面渲染与 JS 执行</text>
+    <!-- Arrow Definition -->
+    <defs>
+        <marker id="arrow" markerWidth="10" markerHeight="10" refX="5" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L0,6 L9,3 z" fill="#333" />
+        </marker>
+    </defs>
+</svg>

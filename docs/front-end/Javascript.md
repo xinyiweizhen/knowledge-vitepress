@@ -2117,3 +2117,190 @@ console.log(iterator.next().value); // xyz
 参考文档：
 
 - [【深度长文】JavaScript数组所有API全解密](http://louiszhai.github.io/2017/04/28/array/)
+
+
+## 说一说`javascript` 中的类(class)
+
+在 `JavaScript` 中，类（`class`）是 `ES6(ES2015)` 引入的一个语法糖，用于更方便地定义对象的构造函数和原型方法。尽管它的底层实现仍然是基于原型继承，
+但它的语法更加直观且易于理解。
+
+::: details 展开查看
+
+### **JavaScript 类的核心知识点**
+
+#### **基本语法**
+类的基本结构包括**类名**、**构造函数**、**实例方法**和**静态方法**。以下是一个完整的例子：
+
+```javascript
+class Person {
+  // 静态属性
+  static species = 'Homo sapiens';
+
+  // 构造函数
+  constructor(name, age) {
+    this.name = name;
+    this.age = age;
+  }
+
+  // 实例方法
+  greet() {
+    console.log(`Hello, my name is ${this.name} and I am ${this.age} years old.`);
+  }
+
+  // 静态方法
+  static info() {
+    console.log(`Humans belong to the species: ${Person.species}`);
+  }
+}
+
+// 使用类
+const person = new Person('Alice', 30);
+person.greet(); // 输出: Hello, my name is Alice and I am 30 years old.
+Person.info();  // 输出: Humans belong to the species: Homo sapiens
+```
+
+#### ** 继承与 `super` 关键字**
+JavaScript 支持通过 `extends` 关键字实现类的继承。子类可以通过 `super` 调用父类的构造函数或方法。
+
+```javascript
+class Animal {
+  constructor(name) {
+    this.name = name;
+  }
+
+  speak() {
+    console.log(`${this.name} makes a noise.`);
+  }
+}
+
+class Dog extends Animal {
+  constructor(name, breed) {
+    super(name); // 调用父类构造函数
+    this.breed = breed;
+  }
+
+  speak() {
+    console.log(`${this.name} barks.`);
+  }
+}
+
+const dog = new Dog('Rex', 'German Shepherd');
+dog.speak(); // 输出: Rex barks.
+console.log(dog.breed); // 输出: German Shepherd
+```
+
+**关键点：**
+- `super()` 必须在子类构造函数中调用父类构造函数，且必须在访问 `this` 之前调用。
+- 子类可以重写父类的方法（如 `speak`），也可以通过 `super.method()` 调用父类的原始实现。
+
+#### ** 静态属性与方法**
+静态成员（属性或方法）属于**类本身**，而不是**实例**。它们通常用于工具方法或共享数据。
+
+```javascript
+class MathUtils {
+  static PI = 3.14159;
+
+  static add(a, b) {
+    return a + b;
+  }
+}
+
+console.log(MathUtils.PI);          // 输出: 3.14159
+console.log(MathUtils.add(2, 3));   // 输出: 5
+```
+
+#### ** 私有字段与方法**
+ES2022 引入了私有字段和私有方法，使用 `#` 标识符定义。这些成员只能在类内部访问，外部无法直接访问。
+
+```javascript
+class Counter {
+  #count = 0; // 私有字段
+
+  increment() {
+    this.#count++;
+    console.log(this.#count);
+  }
+
+  #logCount() { // 私有方法
+    console.log(`Current count: ${this.#count}`);
+  }
+
+  log() {
+    this.#logCount();
+  }
+}
+
+const counter = new Counter();
+counter.increment(); // 输出: 1
+counter.log();       // 输出: Current count: 1
+// console.log(counter.#count); // 报错: Private field '#count' must be declared in an enclosing class
+```
+
+#### ** Getter 和 Setter**
+getter 和 setter 允许我们定义类属性的访问器和修改器，从而对属性进行封装和控制。
+
+```javascript
+class Rectangle {
+  constructor(width, height) {
+    this._width = width;
+    this._height = height;
+  }
+
+  get area() {
+    return this._width * this._height;
+  }
+
+  set width(value) {
+    if (value > 0) {
+      this._width = value;
+    } else {
+      console.error('Width must be positive.');
+    }
+  }
+}
+
+const rect = new Rectangle(5, 10);
+console.log(rect.area); // 输出: 50
+rect.width = 8;
+console.log(rect.area); // 输出: 80
+rect.width = -1;        // 输出: Width must be positive.
+```
+
+#### ** 类表达式**
+除了声明式类（`class Name {}`），JavaScript 还支持类表达式，可以用作匿名类或命名类。
+
+```javascript
+// 匿名类表达式
+const Animal = class {
+  speak() {
+    console.log('Some sound');
+  }
+};
+
+// 命名类表达式
+const Dog = class NamedDog {
+  bark() {
+    console.log('Woof!');
+  }
+};
+
+const animal = new Animal();
+animal.speak(); // 输出: Some sound
+
+const dog = new Dog();
+dog.bark();     // 输出: Woof!
+```
+
+
+### ** 总结**
+- **执行顺序**：静态方法在类上调用时立即执行，构造函数在实例化时执行。
+- **核心特性**：
+   - 类的基本语法包括构造函数、实例方法、静态方法等。
+   - 通过 `extends` 和 `super` 实现继承。
+   - 私有字段和方法提供了更强的封装性。
+   - Getter 和 Setter 提供了对属性的访问控制。
+   - 类表达式允许以更灵活的方式定义类。
+
+:::
+
+------

@@ -4,9 +4,9 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   lang: 'zh-CN',
 
-  title: '知识库',
+  title: 'JOO\'S CHA的宝藏',
 
-  description: '前端知识点总结',
+  description: '个人技术知识库，记录和分享个人碎片化、结构化、体系化的技术知识内容',
 
   // GitHub Pages repositoryname
   base: '/knowledge-vitepress/', // https://<owner>.github.io/<repositoryname>
@@ -29,6 +29,10 @@ export default defineConfig({
           {
             text: '面试准备',
             link: '/docs/hr-exam/behavioural-test',
+          },
+          {
+            text: '面试题汇总',
+            link: '/docs/interview-questions/index',
           },
           {
             text: '前端知识点',
@@ -238,6 +242,20 @@ export default defineConfig({
           ],
         },
       ],
+      '/docs/interview-questions/': [
+        {
+          text: '面试题汇总',
+          items: [
+            { text: 'JavaScript', link: '/docs/interview-questions/javascript' },
+            { text: 'CSS', link: '/docs/interview-questions/css' },
+            { text: 'Vue', link: '/docs/interview-questions/vue' },
+            { text: 'React', link: '/docs/interview-questions/react' },
+            { text: 'Node.js', link: '/docs/interview-questions/nodejs' },
+            { text: '工程化', link: '/docs/interview-questions/engineering' },
+            { text: '计算机网络', link: '/docs/interview-questions/network' },
+          ],
+        },
+      ]
     },
 
     socialLinks: [{ icon: 'github', link: 'https://github.com/xinyiweizhen/knowledge-vitepress' }],

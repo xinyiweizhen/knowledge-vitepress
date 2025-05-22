@@ -310,3 +310,19 @@ localStorage.clear();
 以上代码中，我们把 `click` 事件统一绑定在 `container` 容器中，然后判断 `event.target.tagName === 'IMG'` 即触发事件。
 
 :::
+
+
+## 如何使用edge浏览器或chrome谷歌浏览器调试手机端网页（微信网页、浏览器皆可）
+
+
+1、打开开发者选项中的USB调试功能（狂点“关于手机”中的版本号，然后返回到系统设置中就能看到开发者选项了，一定要打开USB调试功能！）
+
+2、使用USB线连接电脑和手机，选择“传输文件”选项
+
+3、打开edge浏览器或，输入网址：`edge://inspect/#devices`（若使用chrome谷歌浏览器，则输入网址：`chrome://inspect/#devices`）
+
+4、进入到这个界面先不要慌，先等个5-10秒，下面就会出现各个浏览器中的网页
+
+![edge-inspect-devices.png](images/edge-inspect-devices.png)
+
+5、然后点击各个网页左下角的inspect就能进入调试页面了，注意：这里滚动鼠标滑轮进行上下翻页，手机端的页面也会跟着上下翻页，但是仅支持翻页，鼠标点击链接是没有任何反应的，调试仅支持单个页面
