@@ -1194,3 +1194,452 @@ function isValidToken(token) {
 6. **有哪些适用于 WebSocket 的安全测试工具？**
 
 :::
+
+
+## **HTTPS 加密算法和加解密过程是啥？**
+
+
+### ✅ 简洁回答（适合面试）
+
+> [!TIP] 🧠
+> HTTPS 使用的是混合加密机制：
+>
+> - **非对称加密（如 RSA、ECDHE）** 用于密钥交换；
+> - **对称加密（如 AES）** 用于数据加密；
+> - **哈希算法（如 SHA-256）** 用于生成消息摘要和签名；
+>
+> 在 TLS 握手阶段，客户端和服务端通过非对称加密协商出一个共享的对称加密密钥，后续通信都使用该密钥进行加密和解密，确保数据传输的安全性。
+
+::: details 展开查看深入解析
+
+### 🧠 深入解析：HTTPS 加密算法与流程
+
+#### 🔐 HTTPS 使用的三大类加密技术
+
+| 类型 | 常用算法 | 作用 |
+|------|----------|------|
+| **非对称加密** | RSA、ECDHE | 密钥交换、数字签名 |
+| **对称加密** | AES、ChaCha20 | 数据加密/解密 |
+| **哈希算法** | SHA-256、SHA-1 | 数据完整性验证、签名生成 |
+
+---
+
+### 📦 加密过程详解（以 TLS 1.2 为例）
+
+#### 📌 1. 握手阶段：非对称加密协商密钥
+
+##### 示例场景：
+
+- 客户端支持的加密套件（Cipher Suite）包括 `TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256`
+- 服务端选择该套件并开始握手
+
+##### 流程步骤：
+
+1. **ClientHello**
+    - 客户端发送支持的加密算法、协议版本、随机数
+2. **ServerHello**
+    - 服务端选择加密算法、返回随机数
+3. **Certificate**
+    - 服务端发送证书（含公钥）
+4. **ServerKeyExchange（可选）**
+    - 如使用 ECDHE，则发送 DH 参数
+5. **ClientKeyExchange**
+    - 客户端生成 Pre-Master Secret，并用服务端公钥加密后发送
+6. **ChangeCipherSpec + Finished**
+    - 双方切换为加密通信模式
+
+##### 举例说明：
+
+```plaintext
+Pre-Master Secret = random()
+Master Secret = PRF(Pre-Master Secret, "master secret", ClientRandom + ServerRandom)
+Key Block = PRF(Master Secret, "key expansion", ...)
+
+Client Write Key = ...
+Server Write Key = ...
+IV = ...
+```
+
+---
+
+#### 🛡️ 2. 数据传输阶段：对称加密传输数据
+
+握手完成后，所有数据将使用对称密钥进行加密传输。
+
+##### 加密方式示例：
+
+- 使用 AES-GCM（推荐）或 AES-CBC
+- 每个数据包包含：
+    - 加密内容
+    - HMAC（消息认证码）用于完整性校验
+    - 初始化向量（IV）
+
+##### 数据结构简化表示：
+
+```plaintext
+{
+  type: application_data,
+  encrypted_payload: AES_Encrypt(data, key),
+  hmac: HMAC(data, key)
+}
+```
+
+---
+
+### 🔁 加密与解密全过程图解（文字版）
+
+```
+客户端                                服务端
+   |                                     |
+   | ------- ClientHello --------------->|
+   |         - 支持的加密套件            |
+   |         - 协议版本                  |
+   |         - 客户端随机数              |
+   |                                     |
+   |<-------- ServerHello -------------- |
+   |         - 选择的加密算法            |
+   |         - 协议版本                  |
+   |         - 服务端随机数              |
+   |                                     |
+   |<-------- Certificate -------------- |
+   |         - 服务器证书（含公钥）      |
+   |                                     |
+   |<-------- ServerKeyExchange (可选) - |
+   |         - DH/ECDH 参数              |
+   |                                     |
+   |<-------- ServerHelloDone ---------- |
+   |                                     |
+   | ------- ClientKeyExchange --------->|
+   |         - 使用服务端公钥加密        |
+   |           Pre-Master Secret         |
+   |                                     |
+   | ------- ChangeCipherSpec ---------->|
+   |         - 切换为加密通信模式        |
+   |                                     |
+   | ------- Finished -----------------> |
+   |         - 加密的握手完成确认        |
+   |                                     |
+   |<------- ChangeCipherSpec ---------- |
+   |         - 切换为加密通信模式        |
+   |                                     |
+   |<------- Finished ------------------ |
+   |         - 加密的握手完成确认        |
+   |                                     |
+   | --------- 应用数据传输（加密）----->|
+   |         - 所有后续通信都加密        |
+   V                                     V
+```
+
+---
+
+### 🔒 典型加密流程说明（以 ECDHE-RSA-AES128-GCM-SHA256 为例）
+
+#### 1. 非对称加密阶段（密钥交换）
+
+- 使用 ECDHE 实现前向保密（Forward Secrecy）
+- 使用 RSA 进行身份认证（服务端证书签名）
+
+##### 步骤：
+- 客户端和服务端各自生成一对临时密钥（ECDHE 密钥对）
+- 双方交换公钥并计算共享密钥（ECDH）
+- 客户端生成 `Pre-Master Secret` 并使用服务端证书中的公钥加密发送
+- 双方通过 PRF 函数生成 `Master Secret` 和最终的对称密钥
+
+---
+
+#### 2. 对称加密阶段（数据加密）
+
+- 使用 AES-128-GCM（推荐），具有以下优点：
+    - 加密速度快
+    - 支持 AEAD（带认证加密）
+    - 不需要单独的 HMAC
+
+##### 加密逻辑：
+
+```plaintext
+Encrypted_Data = AES_GCM_Encrypt(Data, Key, IV, Additional Authenticated Data)
+```
+
+##### 解密逻辑：
+
+```plaintext
+Decrypted_Data = AES_GCM_Decrypt(Encrypted_Data, Key, IV, AAD)
+```
+
+---
+
+#### 3. 哈希算法（完整性保障）
+
+- 使用 SHA-256 生成消息摘要和签名
+- 用于验证证书、生成 Master Secret、验证数据完整性
+
+##### 示例用途：
+
+- 数字签名：`Signature = Sign(MasterSecret, PrivateKey)`
+- 消息完整性：`HMAC = HMAC(data, key)`
+
+---
+
+### 🔑 常见加密套件（Cipher Suite）示例
+
+| 加密套件名称 | 密钥交换 | 身份认证 | 对称加密 | 摘要算法 |
+|--------------|-----------|------------|-------------|--------------|
+| `TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256` | ECDHE | RSA | AES-128-GCM | SHA256 |
+| `TLS_RSA_WITH_AES_256_CBC_SHA` | RSA | RSA | AES-256-CBC | SHA1 |
+| `TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256` | ECDHE | ECDSA | ChaCha20-Poly1305 | SHA256 |
+
+---
+
+### 💡 面试加分建议
+
+如果你遇到这个问题，可以进一步补充：
+
+> [!TIP] 🧠
+> “HTTPS 的加密过程是分阶段进行的。握手阶段使用非对称加密来安全地交换密钥，而数据传输阶段则使用对称加密来保证效率。
+> 这种混合加密机制兼顾了安全性与性能。”
+
+---
+
+### 📚 相关术语解释
+
+| 术语 | 含义 |
+|------|------|
+| **PRF** | 伪随机函数（Pseudo-Random Function），用于从 Pre-Master Secret 生成 Master Secret |
+| **AEAD** | 认证加密（Authenticated Encryption），同时提供加密和完整性验证 |
+| **前向保密（Forward Secrecy）** | 即使长期私钥泄露，也不会影响过去通信的安全性（ECDHE 实现） |
+| **HMAC** | 基于哈希的消息认证码，用于验证数据完整性 |
+| **IV（Initialization Vector）** | 初始化向量，防止相同明文加密成相同密文 |
+| **GCM（Galois/Counter Mode）** | AES 的一种高效加密模式，支持并行计算 |
+
+:::
+
+## **说说你对 Server-sent events(SSE，服务端推送) 的了解**
+
+
+### ✅ 简洁回答（适合面试）
+
+> [!TIP] 🧠
+> **Server-Sent Events（SSE）** 是一种基于 HTTP 的服务器向客户端的单向实时通信技术。它允许服务器持续地向浏览器推送事件流，适用于需要**服务器主动通知客户端更新**的场景，如股票行情、消息通知、状态更新等。
+>
+> 特点包括：
+> - 基于标准 HTTP 协议
+> - 客户端使用 `EventSource` 接口接收消息
+> - 支持自动重连
+> - 消息格式标准化（`text/event-stream`）
+> - 只支持服务器推送给客户端（单向），不支持客户端发消息给服务端
+
+::: details 展开查看核心概念详解
+
+### 🧠 核心概念详解
+
+#### 1. **什么是 Server-Sent Events？**
+
+SSE 是 HTML5 提供的一种原生 API，用于实现服务器到客户端的**低延迟、长连接的数据推送机制**。
+
+与 WebSocket 不同，SSE 是**单向的**：服务器可以主动推送消息，但客户端不能通过 SSE 发送消息给服务器。
+
+---
+
+#### 2. **SSE 的核心组件**
+
+##### ✅ 客户端：使用 `EventSource`
+
+```js
+const eventSource = new EventSource('https://api.example.com/updates');
+
+eventSource.addEventListener('message', function(event) {
+  console.log('收到消息:', event.data);
+});
+
+eventSource.addEventListener('update', function(event) {
+  console.log('收到 update 类型消息:', event.data);
+});
+
+eventSource.onerror = function(err) {
+  console.error('SSE 错误:', err);
+};
+```
+
+- `EventSource` 是浏览器内置对象
+- 默认监听 `/` 事件类型（即 `message`）
+- 可以监听自定义事件名（如 `update`, `notification`）
+
+---
+
+##### ✅ 服务端：返回 `text/event-stream` 数据流
+
+服务端必须设置响应头为：
+
+```http
+Content-Type: text/event-stream
+Cache-Control: no-cache
+Connection: keep-alive
+```
+
+示例响应体格式：
+
+```plaintext
+event: update
+data: {"value": 123}
+id: 123456
+retry: 5000
+
+data: 这是一条默认消息（无 event 名）
+id: 789
+
+event: notification
+data: 有新通知！
+```
+
+---
+
+### 🔁 SSE 工作原理图解（文字版）
+
+```
+Client (Browser)
+     ↑
+   Listen for events
+     ↑
+   Uses EventSource API
+     ↑
+   Long-lived HTTP Connection
+     ↓
+Server (Node.js / Java / PHP ...)
+   Send data in text/event-stream format
+   Keep connection open and send updates
+```
+
+---
+
+### 🆚 SSE vs WebSocket 对比表
+
+| 特性 | **SSE** | **WebSocket** |
+|------|----------|----------------|
+| 通信方向 | 服务器 → 客户端（单向） | 双向通信 |
+| 协议 | HTTP（兼容性强） | 自定义协议（ws://, wss://） |
+| 易用性 | 简单，浏览器原生支持 | 需要 JS 控制连接生命周期 |
+| 断线重连 | 内置自动重连机制 | 需手动实现重连逻辑 |
+| 消息格式 | `text/event-stream`（纯文本） | 二进制或文本 |
+| 兼容性 | 支持主流浏览器（除 IE） | 广泛支持，需后端配合 |
+| 适用场景 | 实时通知、状态更新、日志推送 | 聊天、游戏、双向通信 |
+| 服务器压力 | 相对较低（HTTP 长连接） | 较高（维持 TCP 长连接） |
+
+---
+
+### 💡 使用场景推荐
+
+| 场景 | 推荐使用 |
+|------|-----------|
+| 实时通知（如订单状态更新） | ✅ SSE |
+| 实时聊天功能 | ❌ SSE / ✅ WebSocket |
+| 股票行情、新闻推送 | ✅ SSE |
+| 游戏、音视频传输 | ❌ SSE / ✅ WebSocket |
+| 服务器日志推送 | ✅ SSE |
+| 移动端轻量级推送 | ✅ SSE（节省资源） |
+
+---
+
+### ⚙️ 示例代码演示
+
+#### ✅ 客户端（HTML + JavaScript）
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SSE Demo</title>
+</head>
+<body>
+  <h2>接收到的消息：</h2>
+  <div id="output"></div>
+
+  <script>
+    const source = new EventSource('https://yourdomain.com/sse');
+
+    source.addEventListener('message', function(event) {
+      document.getElementById('output').innerHTML += `<p>消息: ${event.data}</p>`;
+    });
+
+    source.addEventListener('update', function(event) {
+      console.log('Update 事件:', event.data);
+    });
+
+    source.onerror = function(err) {
+      console.error('SSE 出错:', err);
+    };
+  </script>
+</body>
+</html>
+```
+
+---
+
+#### ✅ 服务端（Node.js Express 示例）
+
+```js
+app.get('/sse', (req, res) => {
+  res.header('Content-Type', 'text/event-stream');
+  res.header('Cache-Control', 'no-cache');
+  res.header('Connection', 'keep-alive');
+
+  let count = 0;
+  const interval = setInterval(() => {
+    res.write(`data: ${JSON.stringify({ time: new Date(), count: ++count })}\n\n`);
+  }, 2000);
+
+  req.on('close', () => {
+    clearInterval(interval);
+    res.end();
+  });
+});
+```
+
+---
+
+### 🛡️ 安全注意事项
+
+| 安全项 | 建议 |
+|--------|--------|
+| **跨域请求（CORS）** | 设置合适的 `Access-Control-Allow-Origin` |
+| **身份验证（Auth）** | 在 URL 或 Header 中加入 Token（如 `?token=xxx`） |
+| **消息过滤** | 客户端对接收到的消息做安全处理（防 XSS） |
+| **连接限制** | 服务端应限制并发连接数，防止滥用 |
+| **断开重连机制** | 利用 SSE 内置的重连机制，也可自定义 |
+| **流量控制** | 控制推送频率，避免带宽浪费 |
+
+---
+
+### 📦 实际应用场景
+
+| 应用 | 描述 |
+|------|------|
+| 实时仪表盘 | 如监控 CPU、内存、用户在线数 |
+| 新闻推送 | 服务器主动推送新闻内容 |
+| 订单状态更新 | 用户页面无需轮询即可收到订单变化 |
+| 日志查看器 | 实时查看部署日志 |
+| 投票/计数器 | 实时更新投票结果或访问人数 |
+| 消息通知 | 如系统通知、邮件到达提醒 |
+
+---
+
+### 💡 面试加分建议
+
+如果你遇到这个问题，可以进一步补充：
+
+> [!TIP] 🧠
+> “虽然 WebSocket 是更通用的实时通信方案，但在只需要服务器推送的场景下，我更倾向于使用 SSE，因为它简单、兼容性好，
+> 不需要维护复杂的连接状态，也不依赖额外库，适合轻量级推送需求。”
+
+---
+
+### 📚 相关延伸问题（可能被追问）
+
+1. **SSE 和 WebSocket 有什么区别？**
+2. **SSE 是如何保持长连接的？**
+3. **SSE 是否支持 CORS？**
+4. **SSE 是否支持二进制数据？**
+5. **SSE 是否会受到浏览器标签页休眠影响？**
+6. **如何保证 SSE 的安全性？**
+7. **SSE 和 HTTP 长轮询有什么区别？**
+
+:::

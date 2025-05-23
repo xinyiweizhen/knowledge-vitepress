@@ -294,8 +294,6 @@ module.exports = {
 ```
 ### 03｜webpack 的构建/打包流程是什么（高频）
 
-![截屏2024-09-15 16.35.26.png](https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/298cbcba8b434d41815c6bc8d97f5213~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgSGlTdGV3aWU=:q75.awebp?rk3s=f64ab15b&x-expires=1747709782&x-signature=BUTd8z5FTV6LrYa6eb2fxXeXnQE%3D)
-
 1. **初始化参数**：从配置文件 和 Shell 语句中读取与合并参数，得出最终的参数；
 2. **开始编译**：用上一步得到的参数
 
@@ -356,8 +354,6 @@ document.head.appendChild(style);
 * 清理输出目录（如使用 CleanWebpackPlugin）。
 
 ### 07｜写 Loader 的步骤和思路
-
-![截屏2024-09-15 16.38.47.png](https://p9-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/17db2b23f0e74d7982977937b0702619~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgSGlTdGV3aWU=:q75.awebp?rk3s=f64ab15b&x-expires=1747709782&x-signature=1IX4qo3vQ0qyZRp4XR5nzoEjOjo%3D)
 
 Loader 本质上是一个函数，作用是将**某个源码字符串转换成另一个源码字符串返**回。接收源文件代码字符串为参数，经过处理转换，然后 `return` 目标代码字符串，构建步骤如下：
 
@@ -1048,56 +1044,9 @@ if (someCondition) {
 
 ## 四、参考文档
 
-1. [webpack官网](https://link.juejin.cn?target=https%3A%2F%2Fwebpack.js.org%2F "https://webpack.js.org/")
-2. [深入浅出Webpack · Dive Into GitBook](https://link.juejin.cn?target=https%3A%2F%2Fjasonhsu9.github.io%2Fdive-into-webpack%2F "https://jasonhsu9.github.io/dive-into-webpack/")
-3. [webpack高频面试题都有哪些？快来一起看看\_哔哩哔哩\_bilibili](https://link.juejin.cn?target=https%3A%2F%2Fwww.bilibili.com%2Fvideo%2FBV1hP41197QZ%2F%3Fspm_id_from%3D333.999.0.0%26vd_source%3D0bcafb665fe6140f5a86a181137e5c7d "https://www.bilibili.com/video/BV1hP41197QZ/?spm_id_from=333.999.0.0&vd_source=0bcafb665fe6140f5a86a181137e5c7d")
-4. [面试常问：为什么 Vite 速度比 Webpack 快？](https://juejin.cn/post/7344916114204049445 "https://juejin.cn/post/7344916114204049445")
-   [![avatar](https://p26-passport.byteacctimg.com/img/user-avatar/1e60e383366d6e19d4626ab4012853ac~200x200.image)
-   HiStewie
-   ![创作等级LV.4](data:image/png;base64... "创作等级LV.4")
-   Full Stack｜Web3](/user/1591748568038823/posts)  [16
-   文章](/user/1591748568038823/posts) [97k
-   阅读](/user/1591748568038823/posts) [563
-   粉丝](/user/1591748568038823/followers)   目录 收起
-
-* [一、为什么要工程化](#heading-0 "一、为什么要工程化")
-* [二、webpack 基础](#heading-1 "二、webpack 基础")
-  + [01｜特性](#heading-2 "01｜特性")
-  + [02｜安装与使用](#heading-3 "02｜安装与使用")
-* [三、市面常见面试题](#heading-4 "三、市面常见面试题")
-  + [00｜减少代码体积方案](#heading-5 "00｜减少代码体积方案")
-  + [01｜为什么要用 Webpack](#heading-6 "01｜为什么要用 Webpack")
-  + [02｜webpack 有哪些常见配置](#heading-7 "02｜webpack 有哪些常见配置")
-  + [03｜webpack 的构建/打包流程是什么（高频）](#heading-8 "03｜webpack 的构建/打包流程是什么（高频）")
-  + [04｜webpack 如何确定依赖引用顺序](#heading-9 "04｜webpack 如何确定依赖引用顺序")
-  + [05｜Module/Chunk/Bundle 是什么](#heading-10 "05｜Module/Chunk/Bundle 是什么")
-  + [06｜Loader 和 Plugin有什么区别（高频）](#heading-11 "06｜Loader 和 Plugin有什么区别（高频）")
-  + [07｜写 Loader 的步骤和思路](#heading-12 "07｜写 Loader 的步骤和思路")
-  + [08｜写 Plugin 的步骤和思路](#heading-13 "08｜写 Plugin 的步骤和思路")
-  + [09｜用过哪些常见 Loader](#heading-14 "09｜用过哪些常见 Loader")
-    - [一、Babel 原理](#heading-15 "一、Babel 原理")
-    - [二、less-loader 的底层原理](#heading-16 "二、less-loader 的底层原理")
-  + [10｜用过哪些常见 Plugin](#heading-17 "10｜用过哪些常见 Plugin")
-  + [11｜SourceMap 原理（高频）](#heading-18 "11｜SourceMap 原理（高频）")
-  + [12｜Mainfest 文件是什么，有什么用](#heading-19 "12｜Mainfest 文件是什么，有什么用")
-  + [13｜Webpack 热替换 HMR 原理（高频）](#heading-20 "13｜Webpack 热替换 HMR 原理（高频）")
-  + [14｜ Webpack 性能优化方法（高频）](#heading-21 "14｜ Webpack 性能优化方法（高频）")
-    - [一、减小打包体积](#heading-22 "一、减小打包体积")
-    - [二、多进程打包](#heading-23 "二、多进程打包")
-    - [三、利用缓存提效](#heading-24 "三、利用缓存提效")
-  + [15｜Tree Shaking 是什么，原理是什么，如何实现](#heading-25 "15｜Tree Shaking 是什么，原理是什么，如何实现")
-  + [16｜如何在 WebPack 中代码分割/提取一个公共模块](#heading-26 "16｜如何在 WebPack 中代码分割/提取一个公共模块")
-  + [17｜webpack5 的新特性](#heading-27 "17｜webpack5 的新特性")
-  + [18｜长缓存、持久化缓存](#heading-28 "18｜长缓存、持久化缓存")
-  + [19｜Chunkhash和Contenthash区别](#heading-29 "19｜Chunkhash和Contenthash区别")
-  + [20｜多页面打包是什么，如何实现](#heading-30 "20｜多页面打包是什么，如何实现")
-  + [21｜Webpack 怎么做错误上报](#heading-31 "21｜Webpack 怎么做错误上报")
-  + [22｜Webpack 代理怎么做](#heading-32 "22｜Webpack 代理怎么做")
-  + [23｜按需加载如何实现，原理是什么（高频）](#heading-33 "23｜按需加载如何实现，原理是什么（高频）")
-  + [24｜文件监听是什么，怎么用，原理是什么](#heading-34 "24｜文件监听是什么，怎么用，原理是什么")
-  + [25｜webpack 能动态加载 require 引入的模块吗？](#heading-35 "25｜webpack 能动态加载 require 引入的模块吗？")
-  + [26｜为什么 Vite 速度比 Webpack 快？](#heading-36 "26｜为什么 Vite 速度比 Webpack 快？")
-* [四、参考文档](#heading-37 "四、参考文档")
+[webpack官网](https://webpack.js.org/)
+[深入浅出Webpack · Dive Into GitBook](https://jasonhsu9.github.io/dive-into-webpack/)
+[面试常问：为什么 Vite 速度比 Webpack 快？](https://juejin.cn/post/7344916114204049445)
 
 
 ## `Webpack`的核心概念有哪些？
@@ -1426,7 +1375,7 @@ module.exports = {
 `Babel` 是 `JavaScript` 的编译器. `Babel` 就是一套解决方案，用来把 ES6 的代码转化为浏览器或者其它环境支持的代码。
 **注意我的用词哈，我说的不是转化为 ES5 ，因为不同类型以及不同版本的浏览器对 ES6 新特性的支持程度都不一样，
 对于浏览器已经支持的部分，Babel 可以不转化，所以 Babel 会依赖浏览器的版本，后面会讲到。
-这里可以先参考 [browerslist](https://link.zhihu.com/?target=https%3A//twitter.com/browserslist) 项目。**
+这里可以先参考 [browerslist](https://twitter.com/browserslist) 项目。**
 
 
 
@@ -1718,7 +1667,7 @@ module.exports = {
 **3. 禁用模块转换（Babel 配置）**
 确保 Babel 不会将 ESM 转换为 CommonJS。在 `.babelrc` 或 `babel.config.json` 中设置：
 
-```json
+```
 {
   "presets": [
     ["@babel/preset-env", { "modules": false }] // 保留 ESM 语法
@@ -1729,7 +1678,7 @@ module.exports = {
 **4. 标记副作用文件（可选）**
 在 `package.json` 中声明哪些文件有副作用（如全局 CSS、Polyfill），避免被错误删除：
 
-```json
+```
 {
   "sideEffects": [
     "**/*.css", // CSS 文件有副作用（影响样式）
