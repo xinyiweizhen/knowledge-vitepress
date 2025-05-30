@@ -936,7 +936,7 @@ var o = {0:'a', 1:'b', 2:'c', length:3};
 console.log(Array.prototype.toSource.call(o)); // ["a","b","c"]
 ```
 
-**遍历方法(12个)**
+#### **遍历方法(12个)**
 
 基于ES6，不会改变自身的方法一共有12个，分别为`forEach`、`every`、`some`、`filter`、`map`、`reduce`、`reduceRight` 以及ES6新增的方法`entries`、`find`、`findIndex`、`keys`、`values`。
 

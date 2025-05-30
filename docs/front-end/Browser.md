@@ -326,3 +326,185 @@ localStorage.clear();
 ![edge-inspect-devices.png](images/edge-inspect-devices.png)
 
 5、然后点击各个网页左下角的inspect就能进入调试页面了，注意：这里滚动鼠标滑轮进行上下翻页，手机端的页面也会跟着上下翻页，但是仅支持翻页，鼠标点击链接是没有任何反应的，调试仅支持单个页面
+
+
+## **如何判断移动端设备**
+
+### 🧠 方法详解与代码示例
+
+#### 方法一：通过 User-Agent 判断（推荐基础方法）
+
+```js
+function isMobileDevice() {
+  return /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i.test(navigator.userAgent);
+}
+
+console.log(isMobileDevice() ? '移动端' : '非移动端');
+```
+
+##### ✅ 优点：
+
+- 实现简单，兼容性好；
+- 可用于服务端渲染（SSR）判断；
+
+##### ⚠️ 缺点：
+
+- `userAgent` 可伪造；
+- 无法区分平板和桌面设备（如 iPad Pro 和 Mac）；
+
+---
+
+#### 方法二：检测 `window.orientation` 是否存在
+
+```js
+function isMobileByOrientation() {
+  return typeof window.orientation !== "undefined";
+}
+
+console.log(isMobileByOrientation() ? '可能是移动设备' : '可能不是移动设备');
+```
+
+##### ✅ 优点：
+
+- 移动设备一般都支持屏幕旋转；
+- 可作为辅助判断依据；
+
+##### ⚠️ 缺点：
+
+- 平板也可能有 orientation；
+- 部分 PC 浏览器也模拟了 orientation；
+
+---
+
+#### 方法三：监听触摸事件（适用于交互逻辑）
+
+```js
+function isTouchDevice() {
+  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+}
+
+console.log(isTouchDevice() ? '支持触摸' : '不支持触摸');
+```
+
+##### ✅ 优点：
+
+- 判断设备是否支持触摸；
+- 可用于 UI 交互优化；
+
+##### ⚠️ 缺点：
+
+- 有些 Windows 笔记本也支持触摸；
+- 不足以单独作为“移动端”判断标准；
+
+---
+
+#### 方法四：通过视口宽度判断（可用于响应式逻辑）
+
+```js
+function isMobileByWidth() {
+  return window.innerWidth <= 768;
+}
+
+console.log(isMobileByWidth() ? '小屏幕设备' : '大屏幕设备');
+```
+
+##### ✅ 优点：
+
+- 与响应式设计一致；
+- 可结合 CSS 媒体查询统一处理；
+
+##### ⚠️ 缺点：
+
+- 宽度不能完全代表设备类型（如小屏笔记本）；
+- 不适合用于功能判断，仅适合 UI 层面；
+
+---
+
+#### 方法五：综合判断（推荐做法）
+
+你可以将多种方式结合，提高判断准确率：
+
+```js
+function isMobile() {
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua) ||
+         (typeof window.orientation !== "undefined") ||
+         (navigator.maxTouchPoints && navigator.maxTouchPoints > 1);
+}
+```
+
+---
+
+### 📱 更细粒度判断（判断具体设备类型）
+
+你可以进一步判断用户使用的具体设备平台：
+
+```js
+function getDeviceType() {
+  const ua = navigator.userAgent;
+
+  if (/iPhone|iPad|iPod/i.test(ua)) {
+    return 'iOS';
+  } else if (/Android/i.test(ua)) {
+    return 'Android';
+  } else if (/Windows/i.test(ua)) {
+    return 'Windows';
+  } else if (/Mac/i.test(ua)) {
+    return 'Mac';
+  } else if (/Linux/i.test(ua)) {
+    return 'Linux';
+  } else {
+    return 'Unknown';
+  }
+}
+
+console.log('当前设备平台:', getDeviceType());
+```
+
+---
+
+### 📐 结合 CSS 媒体查询判断（适用于响应式）
+
+你也可以通过 JS 获取 CSS 中定义的断点值来判断设备类型：
+
+```html
+<!-- HTML -->
+<span id="mobile-check" style="display: none">mobile</span>
+```
+
+```css
+@media only screen and (max-width: 768px) {
+  #mobile-check {
+    display: inline !important;
+  }
+}
+```
+
+```js
+function isMobileByMediaQuery() {
+  const el = document.getElementById('mobile-check');
+  return window.getComputedStyle(el).display === 'inline';
+}
+```
+
+---
+
+### 🔍 进阶：使用第三方库（如 platform.js）
+
+[platform.js](https://github.com/bestiejs/platform.js) 是一个轻量级库，可以解析完整的设备信息：
+
+```bash
+npm install platform
+```
+
+```js
+import platform from 'platform';
+
+console.log(platform.name);      // Chrome, Safari, Firefox...
+console.log(platform.version);   // 120.0.0.0
+console.log(platform.os);        // iOS 16.0.0
+console.log(platform.product);   // iPhone
+```
+
+---
