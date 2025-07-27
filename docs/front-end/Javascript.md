@@ -2304,3 +2304,223 @@ dog.bark();     // 输出: Woof!
 :::
 
 ------
+
+## **promise 有几种状态？**
+
+### ✅ 简洁回答（适合面试）
+
+> [!TIP] 🧠
+> Promise 有三种状态：
+>
+> 1. **pending（进行中）**：初始状态，既没有成功也没有失败；
+> 2. **fulfilled（已成功）**：操作成功完成；
+> 3. **rejected（已失败）**：操作失败；
+>
+> 一旦 Promise 被 **resolve** 或 **reject**，状态将**不可变**，后续的 `.then()` / `.catch()` 会根据当前状态执行对应逻辑。
+
+::: details 展开查看详细解析
+
+### 🧠 一、Promise 状态详解
+
+#### 1. **pending（挂起）**
+
+- Promise 的初始状态；
+- 未被 resolve 或 reject；
+- 可以通过 `.then()` / `.catch()` / `.finally()` 注册回调；
+
+```js
+const p = new Promise((resolve, reject) => {
+  // 此时尚未调用 resolve/reject
+});
+console.log(p); // Promise { <pending> }
+```
+
+---
+
+#### 2. **fulfilled（已成功）**
+
+- Promise 被 `resolve(value)` 调用；
+- `.then()` 会执行；
+- 状态一旦变为 fulfilled，就**不可变**；
+
+```js
+const p = new Promise((resolve) => {
+  resolve('成功');
+});
+p.then(res => console.log(res)); // 成功
+```
+
+---
+
+#### 3. **rejected（已失败）**
+
+- Promise 被 `reject(error)` 调用；
+- `.catch()` 会执行；
+- 状态一旦变为 rejected，就**不可变**；
+
+```js
+const p = new Promise((resolve, reject) => {
+  reject('出错啦');
+});
+p.catch(err => console.log(err)); // 出错啦
+```
+
+---
+
+### 🔄 二、Promise 状态变化流程图解（文字版）
+
+```
+pending
+   │
+   ├─ resolve(value) → fulfilled
+   └─ reject(error) → rejected
+```
+
+- 一个 Promise **只能从 `pending` 变为 `fulfilled` 或 `rejected` 一次**；
+- 一旦状态变更，就**不能再变**；
+- `.then()` / `.catch()` 会根据最终状态执行；
+
+---
+
+### 📌 三、Promise 状态不可变性示例
+
+```js
+const p = new Promise((resolve, reject) => {
+  resolve('成功');
+  reject('失败'); // ❌ 无效，状态已变为 fulfilled
+});
+
+p.then(res => console.log(res))  // 成功
+   .catch(err => console.log(err));
+```
+
+✅ 输出：
+```
+成功
+```
+
+---
+
+### 🧱 四、Promise 状态与 `.then()` / `.catch()` 的关系
+
+| 状态 | `.then()` | `.catch()` |
+|------|------------|-------------|
+| `pending` | 注册回调，等待 resolve/reject | 注册回调，等待 reject |
+| `fulfilled` | 执行 `.then()` 回调 | 不执行 |
+| `rejected` | 不执行 | 执行 `.catch()` 回调 |
+
+---
+
+### 🛠️ 五、如何获取 Promise 状态？
+
+#### ✅ 通过 `.then()` / `.catch()` / `.finally()` 捕获状态
+
+```js
+const p = fetchSomeData();
+
+p.then(res => {
+  console.log('成功:', res);
+}).catch(err => {
+  console.log('失败:', err);
+}).finally(() => {
+  console.log('完成');
+});
+```
+
+#### ❗ 无法直接访问状态（如 `p.status`）
+
+- Promise 的状态是**内部的（internal）**，不能直接访问；
+- 如果需要状态追踪，可以封装一个“状态可读”的 Promise：
+
+```js
+function createTrackedPromise(promise) {
+  let status = 'pending';
+  let result;
+
+  const tracked = {
+    status,
+    result
+  };
+
+  promise.then(res => {
+    tracked.status = 'fulfilled';
+    tracked.result = res;
+  }).catch(err => {
+    tracked.status = 'rejected';
+    tracked.result = err;
+  });
+
+  return tracked;
+}
+```
+
+---
+
+### 📊 六、Promise 状态变化的完整生命周期图解（文字版）
+
+```
+Promise 创建
+     ↓
+初始状态：pending
+     ↓
+触发 resolve(value) → 状态变为 fulfilled → 执行 .then()
+     ↓
+或
+     ↓
+触发 reject(error) → 状态变为 rejected → 执行 .catch()
+     ↓
+无论成功或失败，最终都会执行 .finally()
+```
+
+---
+
+### 🧪 七、Promise 状态与异步流程控制
+
+#### ✅ 示例：链式调用中状态传递
+
+```js
+fetchData()
+  .then(data => {
+    console.log('数据:', data);
+    return processData(data);
+  })
+  .then(processed => {
+    console.log('处理后:', processed);
+  })
+  .catch(err => {
+    console.error('出错:', err);
+  });
+```
+
+##### 状态流转：
+- 第一个 `then()` 成功 → 下一个 `then()` 会继续执行；
+- 如果任何一个环节 `reject()` → `.catch()` 会捕获错误；
+
+---
+
+### 🧱 八、Promise 状态的典型使用场景
+
+| 场景 | 示例 |
+|------|------|
+| **异步请求封装** | `fetch`, `XMLHttpRequest` 封装 |
+| **链式调用控制** | `.then().then().catch()` |
+| **错误统一处理** | 使用 `.catch()` 捕获整个链的错误 |
+| **异步加载组件** | React/Vue 中异步加载组件 |
+| **并行任务控制** | `Promise.all()`, `Promise.race()` |
+| **状态兜底处理** | 使用 `.finally()` 关闭 loading 状态 |
+| **异步流程中断** | 使用 `reject()` 中断流程 |
+
+---
+
+### 🆚 九、Promise vs async/await 状态控制
+
+| 特性 | Promise | async/await |[[]]
+|------|---------|-------------|
+| 状态管理 | 通过 `resolve` / `reject` | 通过 `try/catch` 控制 |
+| 错误处理 | `.catch()` | `try/catch` 更清晰 |
+| 链式调用 | `.then().then()` | `await` 更线性 |
+| 状态不可变性 | ✅ 是 | ✅ 是（底层仍是 Promise） |
+| 可读性 | 中等 | 更高（接近同步写法） |
+| 错误堆栈追踪 | 需要 `.catch()` | 更容易定位错误位置 |
+
+:::

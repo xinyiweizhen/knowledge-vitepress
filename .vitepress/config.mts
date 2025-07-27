@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress'
+import {MermaidMarkdown, MermaidPlugin} from "vitepress-plugin-mermaid";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -266,5 +267,17 @@ export default defineConfig({
       '**/*.image', // 处理图片 .image 后缀的图片
       '**/*.webp', // 处理图片 .webp 后缀的图片
     ],
+    plugins: [MermaidPlugin()],
+    optimizeDeps: {
+      include: ['mermaid'],
+    },
+    ssr: {
+      noExternal: ['mermaid'],
+    },
+  },
+  markdown: {
+    config(md) {
+      md.use(MermaidMarkdown);
+    },
   },
 })
