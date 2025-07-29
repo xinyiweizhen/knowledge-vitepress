@@ -66,6 +66,10 @@ export default defineConfig({
         text: '资源',
         items: [
           {
+            text: 'web前端面试 - 面试官系列',
+            link: 'https://vue3js.cn/interview',
+          },
+          {
             text: '优秀资源库',
             items: [
                 { text: 'es-toolkit', link: 'https://es-toolkit.slash.page/zh_hans/'}

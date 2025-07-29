@@ -1,0 +1,8 @@
+.mermaid{
+    padding: 12px 24px;
+    border-radius: 8px;
+    margin: 16px 0;
+    background-color: var(--vp-code-block-bg);
+    overflow-x: auto;
+    transition: background-color 0.5s;
+}
