@@ -56,6 +56,10 @@ export default defineConfig({
             text: 'Grid 布局教程',
             link: '/docs/guides/css-grid-layout-guide/css-grid-layout-guide'
           },
+          {
+            text: 'Dart 语言教程',
+            link: '/docs/guides/dart-language-guide/dart-base',
+          }
         ],
       },
       {
@@ -104,7 +108,7 @@ export default defineConfig({
             { text: 'React', link: 'docs/front-end/React' },
             { text: '浏览器', link: 'docs/front-end/Browser' },
             { text: '网络', link: 'docs/front-end/Http' },
-            { text: 'Webpack', link: 'docs/front-end/Webpack' },
+            { text: '工程化', link: 'docs/front-end/Webpack' },
           ],
         },
       ],
@@ -236,6 +240,8 @@ export default defineConfig({
           items: [
             { text: 'Flexbox 布局教程', link: '/docs/guides/css-flexbox-guide/css-flexbox-guide' },
             { text: 'Grid 布局教程', link: '/docs/guides/css-grid-layout-guide/css-grid-layout-guide' },
+            { text: 'Dart 语言教程', link: '/docs/guides/dart-language-guide/dart-base' },
+            { text: 'Flutter Widgets 介绍', link: '/docs/guides/dart-language-guide/flutter-widgets' },
           ],
         },
       ],

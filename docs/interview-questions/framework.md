@@ -3817,3 +3817,359 @@ mounted() {
 10. **[ ] 版本管理**：遵循语义化版本
    - 明确弃用策略
    - 提供迁移指南
+
+
+
+
+## **Vue 路由有哪些路由守卫**
+
+
+### 面试回答模板：Vue 路由守卫
+
+### 一、核心总结
+
+在 Vue Router 中，总共有 **3** 种类型的路由守卫，细分下来共 **7** 个具体的守卫。它们分别是：
+
+1.  **全局守卫 (Global Guards)**：影响所有路由。
+    *   `router.beforeEach`
+    *   `router.beforeResolve`
+    *   `router.afterEach`
+2.  **路由独享守卫 (Per-Route Guard)**：只在单个路由配置中生效。
+    *   `beforeEnter`
+3.  **组件内守卫 (In-Component Guards)**：直接在组件内部定义。
+    *   `beforeRouteEnter`
+    *   `beforeRouteUpdate`
+    *   `beforeRouteLeave`
+
+接下来，我将详细解释每一类守卫。
+
+### 二、详细分类解析
+
+#### 1. 全局守卫 (Global Guards)
+
+全局守卫直接在路由器实例上定义，对每一次导航都生效。
+
+*   **`router.beforeEach(to, from, next)`**: **最常用**的守卫。
+    *   **触发时机**: 在**每次**路由切换确认**之前**被调用，是第一个触发的守卫。
+    *   **使用场景**: 登录权限验证、全局页面加载状态（loading bar）、访问数据统计（PV/UV）等。
+    *   **关键点**: **必须调用 `next()`** 来 resolve 这个钩子，否则导航将被中断。
+        *   `next()`: 继续导航。
+        *   `next(false)`: 中断当前导航。
+        *   `next('/login')` 或 `next({ path: '/login' })`: 中断当前导航，并跳转到一个新的位置。
+
+*   **`router.beforeResolve(to, from, next)`**: 全局解析守卫。
+    *   **触发时机**: 在 `beforeEach` 和所有组件内守卫、路由独享守卫执行**之后**，导航被确认**之前**调用。
+    *   **使用场景**: 确保在导航被确认前，所有异步组件和相关数据都已经被解析。例如，在所有前置检查都通过后，获取一些与即将进入的路由相关的数据。
+
+*   **`router.afterEach(to, from)`**: 全局后置钩子。
+    *   **触发时机**: 在所有导航**完成之后**被调用。
+    *   **使用场景**: 关闭 loading bar、设置页面标题 (`document.title`)、发送页面分析数据等。
+    *   **关键点**: **它没有 `next` 函数**，因为它不会改变导航本身。
+
+#### 2. 路由独享守卫 (Per-Route Guard)
+
+直接在路由配置对象上定义的守卫。
+
+*   **`beforeEnter(to, from, next)`**:
+    *   **触发时机**: 在进入该路由**之前**被调用。它的触发时机在全局 `beforeEach` 之后，组件内 `beforeRouteEnter` 之前。
+    *   **使用场景**: 对特定路由进行访问控制，例如“后台管理”页面需要特定角色才能进入，但这种逻辑不具有普适性，不适合放在全局。
+
+```javascript
+const routes = [
+  {
+    path: '/admin',
+    component: AdminPanel,
+    beforeEnter: (to, from, next) => {
+      // 检查用户是否有管理员权限
+      if (isAdmin()) {
+        next();
+      } else {
+        next('/login');
+      }
+    }
+  }
+]
+```
+
+#### 3. 组件内守卫 (In-Component Guards)
+
+直接在路由组件内部定义的守卫，与组件的生命周期紧密相连。
+
+*   **`beforeRouteEnter(to, from, next)`**:
+    *   **触发时机**: 在导航确认、组件实例被**创建之前**调用。
+    *   **关键点**: 这是唯一一个**无法访问组件实例 `this`** 的守卫，因为组件还没被创建。但是，你可以通过向 `next` 传入一个回调来访问实例。
+    *   **使用场景**: 在渲染组件前获取数据。当数据获取成功后才创建组件，可以避免页面内容的闪烁。
+
+    ```javascript
+    beforeRouteEnter(to, from, next) {
+      // 无法访问 `this`
+      fetchData(to.params.id).then(data => {
+        next(vm => {
+          // 通过 `vm` 访问组件实例
+          vm.fetchedData = data;
+        });
+      });
+    }
+    ```
+
+*   **`beforeRouteUpdate(to, from, next)`**:
+    *   **触发时机**: 当当前路由改变，但是该**组件被复用**时调用。例如，对于一个带有动态参数的路径 `/user/:id`，在 `/user/1` 和 `/user/2` 之间导航时。
+    *   **关键点**: **可以访问组件实例 `this`**。
+    *   **使用场景**: 响应路由参数的变化，重新获取数据。
+
+*   **`beforeRouteLeave(to, from, next)`**:
+    *   **触发时机**: 在导航离开该组件的对应路由时调用。
+    *   **关键点**: **可以访问组件实例 `this`**。
+    *   **使用场景**: 提醒用户保存未保存的修改。例如，用户在一个表单页面编辑了内容但未保存，此时离开页面可以弹窗确认。
+
+    ```javascript
+    beforeRouteLeave(to, from, next) {
+      if (this.isFormDirty) {
+        const answer = window.confirm('你有未保存的更改，确定要离开吗？');
+        if (answer) {
+          next();
+        } else {
+          next(false);
+        }
+      } else {
+        next();
+      }
+    }
+    ```
+
+### 三、完整导航解析流程
+
+当一个导航被触发时，守卫的执行顺序如下：
+
+1.  在失活的组件里调用 `beforeRouteLeave` 守卫。
+2.  调用全局的 `router.beforeEach` 守卫。
+3.  在重用的组件里调用 `beforeRouteUpdate` 守卫。
+4.  在路由配置里调用 `beforeEnter`。
+5.  解析异步路由组件。
+6.  在被激活的组件里调用 `beforeRouteEnter`。
+7.  调用全局的 `router.beforeResolve` 守卫。
+8.  导航被确认。
+9.  调用全局的 `router.afterEach` 钩子。
+10. DOM 更新。
+11. 在 `beforeRouteEnter` 守卫中传给 `next` 的回调函数被调用。
+
+---
+
+### 面试官考察点 & 追问方向
+
+*   **考察点**:
+    *   **知识广度**: 是否知道所有7种守卫。
+    *   **知识深度**: 是否理解每种守卫的触发时机、参数和适用场景。
+    *   **逻辑能力**: 能否理清完整的导航解析流程。
+    *   **实践能力**: 能否举出具体的业务场景（如登录鉴权、数据获取、离开确认）。
+
+*   **可能的追问**:
+    1.  **想在进入页面前获取数据，有哪几种方式？它们有什么优缺点？**
+        *   **回答**: 可以使用**全局 `beforeEach`** 或 **组件内 `beforeRouteEnter`**。
+            *   `beforeEach`: 优点是集中管理，但如果只有少数页面需要，会造成不必要的检查。
+            *   `beforeRouteEnter`: 优点是逻辑与组件内聚，更清晰。缺点是无法访问 `this`，需要通过 `next(vm => ...)` 回调。这种方式可以实现“数据到了再渲染组件”，用户体验更好。
+    2.  **`beforeEach` 和 `beforeResolve` 的主要区别是什么？**
+        *   **回答**: `beforeResolve` 在所有导航前置守卫（`beforeEach`、`beforeEnter`、`beforeRouteEnter`）执行完毕，并且所有异步组件都解析完毕之后才执行。可以把它看作是导航被确认前的最后一道防线。
+    3.  **如何实现一个动态修改页面标题（`document.title`）的功能？**
+        *   **回答**: 最佳实践是在全局后置守卫 `router.afterEach` 中实现。可以在路由元信息 `meta` 中定义每个页面的标题，然后在 `afterEach` 中读取 `to.meta.title` 并设置。因为 `afterEach` 在导航后触发且不阻塞导航，所以是理想选择。
+
+
+
+## **Vue 路由有哪些传参方式**
+
+### 面试回答模板：Vue 路由的传参方式
+
+### 一、核心总结
+
+Vue Router 主要有 **2** 种主流的传参方式，再辅以一种不常用的隐式方式。它们分别是：
+
+1.  **`params` 传参 (动态路由)**：参数是 URL 的一部分。例如 `/user/123`，这里的 `123` 就是 `params`。
+2.  **`query` 传参**：参数跟在 URL 的 `?` 后面。例如 `/search?keyword=vue`，这里的 `keyword` 就是 `query`。
+
+此外，接收参数的最佳实践是**使用 `props` 解耦**，让组件与 `$route` 对象分离，这能极大地提高组件的可测试性和复用性。
+
+下面我将详细解析每种方式的配置、使用和场景。
+
+###二、详细解析
+
+#### 方式一：`params` (动态路由参数)
+
+这种方式通常用于传递**必需的、标识性**的参数，如用户ID、文章ID等，它构成了 URL 的一部分，符合 RESTful 风格。
+
+*   **特点**:
+    *   参数在 URL 中可见，且结构清晰。
+    *   刷新页面后参数**不会**丢失。
+    *   需要在路由配置中提前声明占位符。
+
+*   **1. 路由配置 (定义占位符)**
+    在 `router/index.js` 中，路径需要使用冒号 `:` 来定义一个动态段。
+
+    ```javascript
+    const routes = [
+      {
+        path: '/user/:id', // :id 就是参数名
+        name: 'User',
+        component: User,
+        props: true // 推荐开启 props 解耦
+      }
+    ]
+    ```
+
+*   **2. 跳转传参**
+    *   **声明式 (router-link)**:
+
+        ```html
+        <!-- to 必须是对象形式 -->
+        <router-link :to="{ name: 'User', params: { id: 123 }}">Go to User 123</router-link>
+        ```
+
+    *   **编程式 (router.push)**:
+        **注意：使用 `params` 传参时，`push` 方法中必须使用 `name` 来指定路由，不能用 `path`**。如果使用 `path`，`params` 会被忽略。
+
+        ```javascript
+        // 正确用法
+        this.$router.push({ name: 'User', params: { id: 123 } });
+
+        // 错误用法 (params 会丢失)
+        // this.$router.push({ path: '/user', params: { id: 123 } });
+        ```
+
+*   **3. 组件中接收参数**
+    *   **传统方式**:
+        ```javascript
+        export default {
+          mounted() {
+            const userId = this.$route.params.id;
+            console.log(userId); // "123"
+          }
+        }
+        ```
+    *   **最佳实践 (Props 解耦)**:
+        在组件中像接收普通 `props` 一样接收参数。
+
+        ```javascript
+        export default {
+          props: ['id'], // 声明 props
+          mounted() {
+            console.log(this.id); // "123"
+          }
+        }
+        ```
+
+#### 方式二：`query` (查询参数)
+
+这种方式通常用于传递**可选的、非标识性**的参数，如搜索关键词、页码、筛选条件等。
+
+*   **特点**:
+    *   参数在 URL 中以 `?key=value` 的形式拼接，清晰可见。
+    *   刷新页面后参数**不会**丢失。
+    *   **不需要**在路由配置中预先定义。
+
+*   **1. 路由配置**
+    无需任何特殊配置。
+
+    ```javascript
+    const routes = [
+      {
+        path: '/search',
+        name: 'Search',
+        component: Search,
+        props: (route) => ({ keyword: route.query.keyword }) // 推荐 props 函数模式
+      }
+    ]
+    ```
+
+*   **2. 跳转传参**
+    *   **声明式 (router-link)**:
+
+        ```html
+        <router-link :to="{ path: '/search', query: { keyword: 'vue', page: 1 }}">Search Vue</router-link>
+        ```
+
+    *   **编程式 (router.push)**:
+        使用 `query` 时，既可以使用 `path` 也可以使用 `name`。
+
+        ```javascript
+        this.$router.push({
+          path: '/search',
+          query: {
+            keyword: 'vue',
+            page: 1
+          }
+        });
+        ```
+
+*   **3. 组件中接收参数**
+    *   **传统方式**:
+        ```javascript
+        export default {
+          mounted() {
+            const keyword = this.$route.query.keyword;
+            console.log(keyword); // "vue"
+          }
+        }
+        ```
+    *   **最佳实践 (Props 解耦)**:
+        由于 `props: true` 默认只传递 `params`，对于 `query`，需要使用函数模式。
+
+        ```javascript
+        export default {
+          props: ['keyword'], // 声明 props
+          mounted() {
+            console.log(this.keyword); // "vue"
+          }
+        }
+        ```
+
+---
+
+### 三、总结对比
+
+| 特性 | `params` | `query` |
+| :--- | :--- | :--- |
+| **URL外观** | `/user/123` (RESTful风格) | `/search?keyword=vue` |
+| **路由配置** | 必须在 `path` 中定义占位符 | 无需配置 |
+| **编程式导航** | 必须使用 `name` | `name` 和 `path` 均可 |
+| **刷新数据** | **保留** | **保留** |
+| **适用场景** | 必需的标识性参数（ID等） | 可选参数（搜索、过滤、分页） |
+| **Props解耦**| `props: true` | `props: route => ({...})` |
+
+---
+
+### 四、一种不推荐的方式：隐式传参
+
+有一种方式是通过 `router.push` 的 `params` 配合 `path` 使用，可以实现参数不显示在 URL 地址栏中。
+
+```javascript
+// 隐式传参
+this.$router.push({
+  path: '/about',
+  params: { secretInfo: 'some-secret' }
+});
+
+// 在 About 组件中通过 this.$route.params.secretInfo 接收
+```
+
+**但是，这种方式有致命缺陷：**
+
+*   **刷新即丢失**：因为参数仅存在于内存中，一旦用户刷新页面，`params` 数据会完全丢失。
+*   **适用场景极为有限**：仅适用于一些临时性的、一次性的数据传递，不能用于任何持久化或需要通过 URL 分享的状态。在绝大多数情况下，**应使用 Vuex 或其他状态管理工具来处理这种组件间的非 URL 数据共享。**
+
+---
+
+### 面试官考察点 & 追问方向
+
+*   **考察点**:
+    *   对 `params` 和 `query` 的区别理解是否深刻。
+    *   是否知道编程式导航中 `name` 和 `path` 的使用限制。
+    *   是否了解并推崇**使用 `props` 解耦**这一最佳实践，这能体现你的代码设计思想。
+
+*   **可能的追问**:
+    1.  **什么时候该用 `params`，什么时候该用 `query`？**
+        *   **回答**: 当参数是资源的唯一标识符时（如用户ID），用 `params`，这符合 RESTful 设计。当参数是用于筛选、排序或分页等可选操作时，用 `query`。
+    2.  **为什么推荐使用 props 来接收路由参数？**
+        *   **回答**: 核心是**解耦**。它让组件与 `$route` 对象分离，组件变成了一个纯粹的、接收 props 的业务组件。这有两大好处：
+            1.  **可复用性增强**：组件可以脱离路由环境，在任何地方被复用。
+            2.  **可测试性增强**：测试组件时，无需 mock 一个复杂的 `$route` 对象，直接传入 props 即可。
+
+
