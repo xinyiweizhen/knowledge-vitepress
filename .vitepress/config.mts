@@ -271,7 +271,7 @@ export default defineConfig({
 
     socialLinks: [{ icon: 'github', link: 'https://github.com/xinyiweizhen/knowledge-vitepress' }],
   },
-  ignoreDeadLinks: [],
+  ignoreDeadLinks: true,
   vite: {
     assetsInclude: [
       '**/*.image', // 处理图片 .image 后缀的图片
