@@ -488,3 +488,108 @@ IE盒子模型：盒子总宽度/高度 = `width/height + margin = (内容区宽
 - 动态比例设计：em 和 rem 都是优秀的选择，但推荐 rem 更加简洁统一。
 
 :::
+
+
+## **你不知道的`em`细节**
+
+
+### 1. 核心原理：`em` 和 `position` 各自做什么？
+
+首先，我们必须清楚它们各自的职责：
+
+*   **`em` 单位**：一个**相对长度单位**。它的值是根据其**父元素的 `font-size` (字体大小)** 来计算的。
+    *   `font-size: 2em;` 意味着“字体大小是父元素字体大小的2倍”。
+    *   `width: 10em;` 意味着“宽度是**当前元素**字体大小的10倍”。（注意这个细微差别：**当用于`font-size`属性时，`em`参考父元素**；**当用于其他属性如`width`, `margin`时，它参考当前元素自身的`font-size`）**。
+
+*   **`position` 属性**：一个**布局属性**。它决定了元素在文档中的定位方式（即它在页面的哪个位置）。
+    *   `static`：默认值，在正常的文档流中。
+    *   `relative`：相对自身原始位置进行偏移，但不脱离文档流。
+    *   `absolute` / `fixed`：**脱离文档流**，相对于其“定位上下文”进行定位。
+
+从定义上看，一个管“尺寸”，一个管“位置”。它们是两个独立的系统，`position` 的值本身不会改变 `em` 的计算公式。
+
+**简单示例（直接不影响的情况）：**
+
+```html
+<div class="parent" style="font-size: 20px;">
+  <p class="child">这段文字的大小由父元素决定。</p>
+</div>
+```
+
+```css
+.child {
+  font-size: 1.5em; /* 1.5 * 20px = 30px */
+  position: static; /* 或者 relative, absolute, fixed */
+}
+```
+
+在这个例子中，无论你把 `.child` 的 `position` 改成 `static`, `relative`, `absolute` 还是 `fixed`，它的 `font-size` **计算结果永远是 30px**，因为它的父元素 `.parent` 的 `font-size` 没有变。
+
+---
+
+### 2. 间接影响：`position` 如何改变 `em` 的计算基础？
+
+现在，我们来看那个“间接影响”的特殊情况。这种情况发生在 `position: absolute` 或 `position: fixed` 身上。
+
+**关键点在于：一个绝对/固定定位的元素，其继承属性（如`font-size`）不再从其DOM结构上的直接父元素继承，而是从其最近的“已定位”祖先元素 (positioned ancestor) 继承。**
+
+*   **已定位祖先**：指 `position` 值不是 `static` 的任何祖先元素（即 `relative`, `absolute`, `fixed`, `sticky`）。
+*   如果找不到这样的祖先，它最终会从根元素（通常是`<html>`或`<body>`）继承。
+
+**让我们看一个能体现差异的例子：**
+
+想象下面这个HTML结构：
+
+```html
+<div class="grand-parent" style="font-size: 30px; position: relative;">
+  <div class="parent" style="font-size: 10px;">
+    <p class="child" style="font-size: 2em;">这段文字的计算结果会变！</p>
+  </div>
+</div>
+```
+
+#### 场景 A：`child` 是默认的 `position: static`
+
+1.  `.child` 的 `em` 单位寻找它的直接父元素 `.parent`。
+2.  `.parent` 的 `font-size` 是 `10px`。
+3.  `.child` 的计算 `font-size` 是 `2em * 10px = 20px`。
+
+#### 场景 B：给 `child` 添加 `position: absolute`
+
+```css
+.child {
+  font-size: 2em;
+  position: absolute; /* 关键改变！ */
+}
+```
+
+1.  `.child` 现在是绝对定位了。它会脱离文档流，并向上寻找最近的“已定位”祖先来继承 `font-size`。
+2.  它的直接父元素 `.parent` 是 `position: static` (默认值)，所以被**跳过**。
+3.  它继续向上找到 `.grand-parent`，发现其 `position` 是 `relative`。太好了，这就是它的定位上下文和**继承上下文**。
+4.  `.grand-parent` 的 `font-size` 是 `30px`。
+5.  `.child` 的计算 `font-size` 变为 `2em * 30px = 60px`。
+
+看！仅仅因为改变了 `position`，`.child` 的字体大小就从 `20px` 变成了 `60px`。
+
+**这就是 `position` 如何间接影响 `em` 计算结果的原理：它改变了 `em` 单位计算时所依赖的那个“父级字体大小”的来源。**
+
+---
+
+### 总结与最佳实践
+
+| 属性 | 影响 `em` 吗？ | 原因 |
+| :--- | :--- | :--- |
+| `position: static` | **不影响** | 元素在正常文档流中，`em` 基于其DOM父元素计算。 |
+| `position: relative` | **不影响** | 元素仍在文档流中，`em` 依然基于其DOM父元素计算。 |
+| `position: absolute` | **可能影响** | 元素脱离文档流，`em` 计算的基准 `font-size` 会从最近的“已定位”祖先继承，可能不再是其直接父元素。 |
+| `position: fixed` | **可能影响** | 和`absolute`类似，但其定位上下文通常是视口(viewport)。继承规则也遵循寻找最近“已定位”祖先。 |
+
+#### 建议：使用 `rem` 来避免混乱
+
+正是因为 `em` 的这种层层嵌套和依赖关系有时会变得复杂（尤其是在和 `position` 结合时），`rem` (root em) 单位应运而生。
+
+*   **`rem`**：永远只相对于根元素 `<html>` 的 `font-size` 进行计算。
+
+无论元素的嵌套多深，`position` 是什么，`2rem` 永远等于 `<html>` 字体大小的2倍。这让尺寸系统变得非常可预测和稳定。
+
+**结论**：在日常开发中，如果你不希望元素的尺寸受到其父级或定位上下文的 `font-size` 影响，**优先使用 `rem` 单位**。如果你确实需要尺寸与局部父元素字体大小挂钩（比如一个按钮内的图标大小随按钮文字大小变化），`em` 才是合适的选择。
